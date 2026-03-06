@@ -1,12 +1,12 @@
-﻿# Schema do Banco de Dados - Portal de InclusÃ£o
+# Schema do Banco de Dados - Portal de Inclusão
 
-## VisÃ£o Geral
+## Visão Geral
 
 O banco de dados utiliza **MySQL 8.0** hospedado em **pocos-acolhedora-srv** com o nome `db_ciptea_girassol`. O schema foi projetado para suportar:
-- GestÃ£o de usuÃ¡rios e beneficiÃ¡rios
-- SolicitaÃ§Ãµes de carteiras CIPTEA/Girassol
+- Gestão de usuários e beneficiários
+- Solicitações de carteiras CIPTEA/Girassol
 - Upload e armazenamento de documentos
-- MigraÃ§Ã£o de dados do sistema legado
+- Migração de dados do sistema legado
 - Auditoria e rastreabilidade
 
 ## Diagrama Entidade-Relacionamento
@@ -88,17 +88,17 @@ erDiagram
 
 Armazena credenciais e perfis de acesso ao sistema.
 
-| Coluna | Tipo | RestriÃ§Ãµes | DescriÃ§Ã£o |
+| Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
-| `id` | INT | PK, AUTO_INCREMENT | Identificador Ãºnico |
-| `nome` | VARCHAR(255) | NOT NULL | Nome completo do usuÃ¡rio |
+| `id` | INT | PK, AUTO_INCREMENT | Identificador único |
+| `nome` | VARCHAR(255) | NOT NULL | Nome completo do usuário |
 | `email` | VARCHAR(255) | NOT NULL, UNIQUE | Email para login |
 | `senha_hash` | VARCHAR(255) | NOT NULL | Hash bcrypt da senha |
 | `perfil` | ENUM | DEFAULT 'cidadao' | Perfil: 'cidadao' ou 'admin' |
-| `criado_em` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Data de criaÃ§Ã£o |
-| `atualizado_em` | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP | Data da Ãºltima atualizaÃ§Ã£o |
+| `criado_em` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Data de criação |
+| `atualizado_em` | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP | Data da última atualização |
 
-**Ãndices:**
+**Índices:**
 - PRIMARY KEY (`id`)
 - UNIQUE KEY (`email`)
 
@@ -106,34 +106,34 @@ Armazena credenciais e perfis de acesso ao sistema.
 
 ### 2. beneficiarios
 
-Armazena dados pessoais das pessoas com deficiÃªncia.
+Armazena dados pessoais das pessoas com deficiência.
 
-| Coluna | Tipo | RestriÃ§Ãµes | DescriÃ§Ã£o |
+| Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
-| `id` | INT | PK, AUTO_INCREMENT | Identificador Ãºnico |
-| `usuario_id` | INT | FK, NOT NULL | ReferÃªncia ao usuÃ¡rio |
+| `id` | INT | PK, AUTO_INCREMENT | Identificador único |
+| `usuario_id` | INT | FK, NOT NULL | Referência ao usuário |
 | `nome` | VARCHAR(255) | NOT NULL | Nome completo |
 | `nome_social` | VARCHAR(255) | NULL | Nome social (opcional) |
 | `cpf` | VARCHAR(14) | UNIQUE, NULL | CPF (pode ser NULL se migrado sem descriptografia) |
 | `rg` | VARCHAR(20) | NULL | RG |
-| `orgao_emissor` | VARCHAR(20) | NULL | Ã“rgÃ£o emissor do RG |
+| `orgao_emissor` | VARCHAR(20) | NULL | Órgão emissor do RG |
 | `data_nascimento` | DATE | NOT NULL | Data de nascimento |
 | `sexo` | ENUM | NULL | 'Masculino', 'Feminino', 'Outro' |
 | `naturalidade` | VARCHAR(100) | NULL | Cidade de nascimento |
-| `tipo_sanguineo` | VARCHAR(5) | NULL | Tipo sanguÃ­neo |
-| `deficiencias` | JSON | NULL | Array de deficiÃªncias (ex: ["TEA", "TDAH"]) |
-| `cid` | VARCHAR(10) | NULL | CÃ³digo Internacional de DoenÃ§as |
-| `cns` | VARCHAR(20) | NULL | CartÃ£o Nacional de SaÃºde |
-| `filiacao_mae` | VARCHAR(255) | NULL | Nome da mÃ£e |
+| `tipo_sanguineo` | VARCHAR(5) | NULL | Tipo sanguíneo |
+| `deficiencias` | JSON | NULL | Array de deficiências (ex: ["TEA", "TDAH"]) |
+| `cid` | VARCHAR(10) | NULL | Código Internacional de Doenças |
+| `cns` | VARCHAR(20) | NULL | Cartão Nacional de Saúde |
+| `filiacao_mae` | VARCHAR(255) | NULL | Nome da mãe |
 | `filiacao_pai` | VARCHAR(255) | NULL | Nome do pai |
-| `responsavel_nome` | VARCHAR(255) | NULL | Nome do responsÃ¡vel legal |
-| `responsavel_doc` | VARCHAR(50) | NULL | CPF/RG do responsÃ¡vel |
-| `responsavel_telefone` | VARCHAR(20) | NULL | Telefone do responsÃ¡vel |
-| `responsavel_email` | VARCHAR(255) | NULL | Email do responsÃ¡vel |
-| `rua` | VARCHAR(255) | NULL | EndereÃ§o - Rua |
-| `numero` | VARCHAR(20) | NULL | EndereÃ§o - NÃºmero |
-| `bairro` | VARCHAR(100) | NULL | EndereÃ§o - Bairro |
-| `cidade` | VARCHAR(100) | DEFAULT 'PoÃ§os de Caldas' | Cidade |
+| `responsavel_nome` | VARCHAR(255) | NULL | Nome do responsável legal |
+| `responsavel_doc` | VARCHAR(50) | NULL | CPF/RG do responsável |
+| `responsavel_telefone` | VARCHAR(20) | NULL | Telefone do responsável |
+| `responsavel_email` | VARCHAR(255) | NULL | Email do responsável |
+| `rua` | VARCHAR(255) | NULL | Endereço - Rua |
+| `numero` | VARCHAR(20) | NULL | Endereço - Número |
+| `bairro` | VARCHAR(100) | NULL | Endereço - Bairro |
+| `cidade` | VARCHAR(100) | DEFAULT 'Poços de Caldas' | Cidade |
 | `estado` | VARCHAR(2) | DEFAULT 'MG' | Estado (UF) |
 | `cep` | VARCHAR(10) | NULL | CEP |
 | `legado_id` | INT | NULL | ID do registro no sistema legado |
@@ -141,32 +141,32 @@ Armazena dados pessoais das pessoas com deficiÃªncia.
 | `legacy_rg` | TEXT | NULL | RG criptografado original (backup) |
 | `legacy_cns` | TEXT | NULL | CNS criptografado original (backup) |
 
-**Ãndices:**
+**Índices:**
 - PRIMARY KEY (`id`)
 - UNIQUE KEY (`cpf`) - permite NULL
 - FOREIGN KEY (`usuario_id`) REFERENCES `usuarios(id)` ON DELETE CASCADE
-- INDEX (`legado_id`) - para buscas de migraÃ§Ã£o
+- INDEX (`legado_id`) - para buscas de migração
 
 ---
 
 ### 3. solicitacoes
 
-Registra solicitaÃ§Ãµes de carteiras CIPTEA/Girassol.
+Registra solicitações de carteiras CIPTEA/Girassol.
 
-| Coluna | Tipo | RestriÃ§Ãµes | DescriÃ§Ã£o |
+| Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
-| `id` | INT | PK, AUTO_INCREMENT | Identificador Ãºnico |
-| `beneficiario_id` | INT | FK, NOT NULL | ReferÃªncia ao beneficiÃ¡rio |
+| `id` | INT | PK, AUTO_INCREMENT | Identificador único |
+| `beneficiario_id` | INT | FK, NOT NULL | Referência ao beneficiário |
 | `tipo` | ENUM | NOT NULL | 'ciptea', 'girassol', 'ambos' |
 | `status` | ENUM | DEFAULT 'pendente' | 'pendente', 'aprovado', 'rejeitado' |
-| `motivo_rejeicao` | TEXT | NULL | Justificativa em caso de rejeiÃ§Ã£o |
-| `protocolo` | VARCHAR(50) | UNIQUE | NÃºmero de protocolo para acompanhamento |
-| `observacoes_admin` | TEXT | NULL | ObservaÃ§Ãµes internas do administrador |
-| `criado_em` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Data de criaÃ§Ã£o |
-| `atualizado_em` | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP | Data da Ãºltima atualizaÃ§Ã£o |
-| `data_renovacao` | DATE | NULL | Data de renovaÃ§Ã£o (migrado do legado) |
+| `motivo_rejeicao` | TEXT | NULL | Justificativa em caso de rejeição |
+| `protocolo` | VARCHAR(50) | UNIQUE | Número de protocolo para acompanhamento |
+| `observacoes_admin` | TEXT | NULL | Observações internas do administrador |
+| `criado_em` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Data de criação |
+| `atualizado_em` | TIMESTAMP | ON UPDATE CURRENT_TIMESTAMP | Data da última atualização |
+| `data_renovacao` | DATE | NULL | Data de renovação (migrado do legado) |
 
-**Ãndices:**
+**Índices:**
 - PRIMARY KEY (`id`)
 - UNIQUE KEY (`protocolo`)
 - FOREIGN KEY (`beneficiario_id`) REFERENCES `beneficiarios(id)` ON DELETE CASCADE
@@ -176,32 +176,32 @@ Registra solicitaÃ§Ãµes de carteiras CIPTEA/Girassol.
 
 ### 4. documentos
 
-Armazena metadados dos documentos anexados Ã s solicitaÃ§Ãµes.
+Armazena metadados dos documentos anexados às solicitações.
 
-| Coluna | Tipo | RestriÃ§Ãµes | DescriÃ§Ã£o |
+| Coluna | Tipo | Restrições | Descrição |
 |--------|------|------------|-----------|
-| `id` | INT | PK, AUTO_INCREMENT | Identificador Ãºnico |
-| `solicitacao_id` | INT | FK, NOT NULL | ReferÃªncia Ã  solicitaÃ§Ã£o |
+| `id` | INT | PK, AUTO_INCREMENT | Identificador único |
+| `solicitacao_id` | INT | FK, NOT NULL | Referência à solicitação |
 | `tipo` | ENUM | NOT NULL | Tipo do documento |
 | `caminho_arquivo` | VARCHAR(255) | NOT NULL | Caminho do arquivo no storage |
 | `enviado_em` | TIMESTAMP | DEFAULT CURRENT_TIMESTAMP | Data do upload |
 
 **Tipos de Documento:**
-- `foto_rosto` - Foto do rosto do beneficiÃ¡rio
+- `foto_rosto` - Foto do rosto do beneficiário
 - `doc_identidade` - RG ou CNH
-- `doc_responsavel` - Documento do responsÃ¡vel legal
-- `laudo_medico` - Laudo mÃ©dico comprovando a deficiÃªncia
-- `cartao_cns` - CartÃ£o Nacional de SaÃºde
-- `comprovante_residencia` - Comprovante de residÃªncia
+- `doc_responsavel` - Documento do responsável legal
+- `laudo_medico` - Laudo médico comprovando a deficiência
+- `cartao_cns` - Cartão Nacional de Saúde
+- `comprovante_residencia` - Comprovante de residência
 - `assinatura` - Assinatura digitalizada
 
-**Ãndices:**
+**Índices:**
 - PRIMARY KEY (`id`)
 - FOREIGN KEY (`solicitacao_id`) REFERENCES `solicitacoes(id)` ON DELETE CASCADE
 
 ---
 
-## EstratÃ©gia de MigraÃ§Ã£o de Dados
+## Estratégia de Migração de Dados
 
 ### Colunas Legadas
 
@@ -210,13 +210,13 @@ As colunas `legacy_*` em `beneficiarios` armazenam os valores criptografados ori
 - `legacy_rg` - RG criptografado
 - `legacy_cns` - CNS criptografado
 
-### Processo de MigraÃ§Ã£o
+### Processo de Migração
 
 ```mermaid
 flowchart TD
-    A[InÃ­cio MigraÃ§Ã£o] --> B{Conectar BD Legado}
+    A[Início Migração] --> B{Conectar BD Legado}
     B -->|Sucesso| C[Ler Tabela 'Cadastro']
-    B -->|Falha| Z[Erro: ConexÃ£o]
+    B -->|Falha| Z[Erro: Conexão]
     
     C --> D[Para cada registro]
     D --> E{Tentar Descriptografar<br/>CPF, RG, CNS}
@@ -227,24 +227,24 @@ flowchart TD
     F --> H[Validar CPF]
     G --> H
     
-    H -->|VÃ¡lido| I[Criar UsuÃ¡rio]
-    H -->|InvÃ¡lido| J[Marcar para RevalidaÃ§Ã£o]
+    H -->|Válido| I[Criar Usuário]
+    H -->|Inválido| J[Marcar para Revalidação]
     
-    I --> K[Criar BeneficiÃ¡rio]
+    I --> K[Criar Beneficiário]
     J --> K
     
-    K --> L[Criar SolicitaÃ§Ã£o]
+    K --> L[Criar Solicitação]
     L --> M[Migrar Documentos]
     M --> N{Mais registros?}
     
     N -->|Sim| D
-    N -->|NÃ£o| O[Commit Transaction]
+    N -->|Não| O[Commit Transaction]
     O --> P[Fim]
 ```
 
 ### Tabelas Legado_*
 
-Quando o banco de origem e destino sÃ£o o mesmo, tabelas com prefixo `legado_` sÃ£o tratadas como fonte:
+Quando o banco de origem e destino são o mesmo, tabelas com prefixo `legado_` são tratadas como fonte:
 
 ```sql
 -- Exemplo de tabela legada no mesmo banco
@@ -257,7 +257,7 @@ CREATE TABLE legado_cadastro (
 );
 ```
 
-## EstatÃ­sticas Atuais
+## Estatísticas Atuais
 
 | Tabela | Registros |
 |--------|-----------|
@@ -266,9 +266,9 @@ CREATE TABLE legado_cadastro (
 | solicitacoes | 5 |
 | documentos | 43 |
 
-## Consultas Ãšteis
+## Consultas Úteis
 
-### Listar solicitaÃ§Ãµes pendentes
+### Listar solicitações pendentes
 ```sql
 SELECT 
     s.id,
@@ -293,7 +293,7 @@ FROM beneficiarios
 WHERE legado_id IS NOT NULL;
 ```
 
-### Auditoria de documentos por solicitaÃ§Ã£o
+### Auditoria de documentos por solicitação
 ```sql
 SELECT 
     s.protocolo,
@@ -306,21 +306,20 @@ LEFT JOIN documentos d ON d.solicitacao_id = s.id
 GROUP BY s.id;
 ```
 
-## ManutenÃ§Ã£o e Backup
+## Manutenção e Backup
 
-### Backup DiÃ¡rio
+### Backup Diário
 ```bash
 mysqldump -h pocos-acolhedora-srv -u ciptea_girassol_dti -p db_ciptea_girassol > backup_$(date +%Y%m%d).sql
 ```
 
-### RestauraÃ§Ã£o
+### Restauração
 ```bash
 mysql -h pocos-acolhedora-srv -u ciptea_girassol_dti -p db_ciptea_girassol < backup_20260209.sql
 ```
 
-## ReferÃªncias
+## Referências
 
-- [VisÃ£o Geral da Arquitetura](overview.md)
-- [Fluxo de MigraÃ§Ã£o](migration_diagram.md)
-- [ADR: EstratÃ©gia de MigraÃ§Ã£o](../adr/002-migration-strategy.md)
-
+- [Visão Geral da Arquitetura](overview.md)
+- [Fluxo de Migração](migration_diagram.md)
+- [ADR: Estratégia de Migração](../adr/002-migration-strategy.md)

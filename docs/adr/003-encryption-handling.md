@@ -1,4 +1,4 @@
-﻿# ADR 003: Tratamento de Dados Criptografados
+# ADR 003: Tratamento de Dados Criptografados
 
 **Status**: Aceito  
 **Data**: 2024-02-05  
@@ -6,15 +6,15 @@
 
 ## Contexto
 
-O sistema legado criptografa dados sensÃ­veis (CPF, RG, CNS) usando AES-256-CBC. Durante a migraÃ§Ã£o, enfrentamos:
+O sistema legado criptografa dados sensíveis (CPF, RG, CNS) usando AES-256-CBC. Durante a migração, enfrentamos:
 - **Problema 1**: Descriptografia falha em ~35% dos casos
-- **Problema 2**: NÃ£o sabemos se chaves estÃ£o corretas
-- **Problema 3**: Dados podem ter sido criptografados mÃºltiplas vezes
-- **Problema 4**: Alguns valores podem nÃ£o estar criptografados
+- **Problema 2**: Não sabemos se chaves estão corretas
+- **Problema 3**: Dados podem ter sido criptografados múltiplas vezes
+- **Problema 4**: Alguns valores podem não estar criptografados
 
-## DecisÃ£o
+## Decisão
 
-Implementamos uma **estratÃ©gia de descriptografia multi-tentativa** com fallback para preservaÃ§Ã£o de dados originais.
+Implementamos uma **estratégia de descriptografia multi-tentativa** com fallback para preservação de dados originais.
 
 ### Algoritmo de Descriptografia
 
@@ -28,7 +28,7 @@ private function my_simple_crypt($string, $action = 'd') {
     $iv = substr(hash('sha256', $secret_iv), 0, 16);
     
     if ($action == 'd') {
-        // ESTRATÃ‰GIA 1: Decode Base64 padrÃ£o + Decrypt
+        // ESTRATÉGIA 1: Decode Base64 padrão + Decrypt
         $attempt1 = openssl_decrypt(
             base64_decode($string), 
             $encrypt_method, 
@@ -38,7 +38,7 @@ private function my_simple_crypt($string, $action = 'd') {
         );
         if ($attempt1 !== false) return $attempt1;
 
-        // ESTRATÃ‰GIA 2: Double Base64 + Raw Decrypt
+        // ESTRATÉGIA 2: Double Base64 + Raw Decrypt
         $step1 = base64_decode($string);
         $step2 = base64_decode($step1);
         if ($step2) {
@@ -53,25 +53,25 @@ private function my_simple_crypt($string, $action = 'd') {
         }
     }
     
-    return false; // Todas as estratÃ©gias falharam
+    return false; // Todas as estratégias falharam
 }
 ```
 
-### Fluxo de DecisÃ£o
+### Fluxo de Decisão
 
 ```mermaid
 flowchart TD
-    A[Valor Criptografado] --> B{EstratÃ©gia 1:<br/>Base64 + Decrypt}
+    A[Valor Criptografado] --> B{Estratégia 1:<br/>Base64 + Decrypt}
     B -->|Sucesso| C[Validar Formato]
-    B -->|Falha| D{EstratÃ©gia 2:<br/>Double Base64}
+    B -->|Falha| D{Estratégia 2:<br/>Double Base64}
     D -->|Sucesso| C
-    D -->|Falha| E{Valor parece<br/>nÃ£o-criptografado?}
+    D -->|Falha| E{Valor parece<br/>não-criptografado?}
     
     E -->|Sim| F[Usar valor direto]
-    E -->|NÃ£o| G[Salvar em legacy_*<br/>Campo principal = NULL]
+    E -->|Não| G[Salvar em legacy_*<br/>Campo principal = NULL]
     
-    C -->|CPF vÃ¡lido| H[Usar valor]
-    C -->|InvÃ¡lido| G
+    C -->|CPF válido| H[Usar valor]
+    C -->|Inválido| G
     
     F --> I{Validar}
     I -->|OK| H
@@ -80,125 +80,124 @@ flowchart TD
 
 ## Alternativas Consideradas
 
-### 1. Tentar Apenas Uma EstratÃ©gia
-**DescriÃ§Ã£o**: Usar apenas Base64 + Decrypt padrÃ£o
+### 1. Tentar Apenas Uma Estratégia
+**Descrição**: Usar apenas Base64 + Decrypt padrão
 
-**PrÃ³s:**
-- CÃ³digo mais simples
-- Mais rÃ¡pido
+**Prós:**
+- Código mais simples
+- Mais rápido
 
 **Contras:**
-âŒ Perde ~15% de registros que funcionam com double base64  
-âŒ Sem fallback para casos edge  
+❌ Perde ~15% de registros que funcionam com double base64  
+❌ Sem fallback para casos edge  
 
 ### 2. Solicitar Novas Chaves ao Fornecedor
-**DescriÃ§Ã£o**: Contatar desenvolvedor do sistema legado
+**Descrição**: Contatar desenvolvedor do sistema legado
 
-**PrÃ³s:**
+**Prós:**
 - Potencialmente resolve 100%
 
 **Contras:**
-âŒ Fornecedor nÃ£o responde  
-âŒ Chaves podem ter sido perdidas  
-âŒ Atrasa projeto indefinidamente  
+❌ Fornecedor não responde  
+❌ Chaves podem ter sido perdidas  
+❌ Atrasa projeto indefinidamente  
 
 ### 3. Descriptografar Manualmente Caso a Caso
-**DescriÃ§Ã£o**: Administrador descriptografa cada registro
+**Descrição**: Administrador descriptografa cada registro
 
-**PrÃ³s:**
+**Prós:**
 - Controle total
 
 **Contras:**
-âŒ InviÃ¡vel para 200+ registros  
-âŒ Propenso a erros humanos  
-âŒ NÃ£o escalÃ¡vel  
+❌ Inviável para 200+ registros  
+❌ Propenso a erros humanos  
+❌ Não escalável  
 
-## DecisÃ£o Escolhida: Multi-Tentativa com Fallback
+## Decisão Escolhida: Multi-Tentativa com Fallback
 
 ### Justificativa
-âœ… **MÃ¡xima Taxa de Sucesso**: ~65% vs ~50% com estratÃ©gia Ãºnica  
-âœ… **Sem Perda de Dados**: Valores originais sempre preservados  
-âœ… **FlexÃ­vel**: Novas estratÃ©gias podem ser adicionadas  
-âœ… **AuditÃ¡vel**: Administradores veem o que falhou  
+✅ **Máxima Taxa de Sucesso**: ~65% vs ~50% com estratégia única  
+✅ **Sem Perda de Dados**: Valores originais sempre preservados  
+✅ **Flexível**: Novas estratégias podem ser adicionadas  
+✅ **Auditável**: Administradores veem o que falhou  
 
-## ConsequÃªncias
+## Consequências
 
 ### Positivas
-âœ… Taxa de descriptografia aumentou de 50% para 65%  
-âœ… Dados originais sempre disponÃ­veis para auditoria  
-âœ… Possibilidade de melhorar algoritmo futuramente  
-âœ… TransparÃªncia total do processo  
+✅ Taxa de descriptografia aumentou de 50% para 65%  
+✅ Dados originais sempre disponíveis para auditoria  
+✅ Possibilidade de melhorar algoritmo futuramente  
+✅ Transparência total do processo  
 
 ### Negativas
-âš ï¸ CÃ³digo mais complexo  
-âš ï¸ Ligeiramente mais lento (desprezÃ­vel para 200 registros)  
-âš ï¸ Ainda ~35% de falhas  
+⚠️ Código mais complexo  
+⚠️ Ligeiramente mais lento (desprezível para 200 registros)  
+⚠️ Ainda ~35% de falhas  
 
-### MitigaÃ§Ãµes
-- Interface de revalidaÃ§Ã£o permite correÃ§Ã£o manual
+### Mitigações
+- Interface de revalidação permite correção manual
 - Logs detalhados de cada tentativa
-- Colunas `legacy_*` permitem recuperaÃ§Ã£o futura
+- Colunas `legacy_*` permitem recuperação futura
 
 ## Casos de Teste
 
 ### Caso 1: Criptografia Simples
 ```
 Input: "U2FsdGVkX1+vupppZksvRf5pq5g5XjFRlipRkwB0K1Y="
-EstratÃ©gia 1: âœ… Sucesso
+Estratégia 1: ✅ Sucesso
 Output: "12345678901"
 ```
 
 ### Caso 2: Double Base64
 ```
 Input: "VTJGc2RHVmtYMS92dXBwcFprc3ZSZjVwcTVnNVhqRlJsaXBSa3dCMEsxWT0="
-EstratÃ©gia 1: âŒ Falha
-EstratÃ©gia 2: âœ… Sucesso
+Estratégia 1: ❌ Falha
+Estratégia 2: ✅ Sucesso
 Output: "98765432100"
 ```
 
-### Caso 3: NÃ£o Criptografado
+### Caso 3: Não Criptografado
 ```
 Input: "123.456.789-01"
-EstratÃ©gia 1: âŒ Falha
-EstratÃ©gia 2: âŒ Falha
-ValidaÃ§Ã£o: âœ… Formato vÃ¡lido
+Estratégia 1: ❌ Falha
+Estratégia 2: ❌ Falha
+Validação: ✅ Formato válido
 Output: "12345678901"
 ```
 
 ### Caso 4: Falha Total
 ```
 Input: "xK9#mL@pQ2$vN8"
-EstratÃ©gia 1: âŒ Falha
-EstratÃ©gia 2: âŒ Falha
-ValidaÃ§Ã£o: âŒ InvÃ¡lido
+Estratégia 1: ❌ Falha
+Estratégia 2: ❌ Falha
+Validação: ❌ Inválido
 Output: NULL (salvo em legacy_cpf)
 ```
 
-## MÃ©tricas
+## Métricas
 
-| MÃ©trica | Antes | Depois | Melhoria |
+| Métrica | Antes | Depois | Melhoria |
 |---------|-------|--------|----------|
 | Taxa de Sucesso CPF | 50% | 65% | +30% |
 | Taxa de Sucesso RG | 45% | 60% | +33% |
 | Taxa de Sucesso CNS | 40% | 55% | +37% |
-| Tempo MÃ©dio/Registro | 0.3s | 0.35s | -14% |
+| Tempo Médio/Registro | 0.3s | 0.35s | -14% |
 
 ## Componente de Teste
 
 O sistema inclui `AdminEncryption.vue` para testar criptografia:
 - Interface para testar chaves diferentes
-- VisualizaÃ§Ã£o de tentativas de descriptografia
-- Ãštil para debugging e auditoria
+- Visualização de tentativas de descriptografia
+- Útil para debugging e auditoria
 
-## PrÃ³ximas Melhorias
+## Próximas Melhorias
 
-1. **EstratÃ©gia 3**: Tentar chaves alternativas conhecidas
-2. **Machine Learning**: Detectar padrÃ£o de criptografia automaticamente
-3. **Batch Processing**: Processar mÃºltiplos registros em paralelo
+1. **Estratégia 3**: Tentar chaves alternativas conhecidas
+2. **Machine Learning**: Detectar padrão de criptografia automaticamente
+3. **Batch Processing**: Processar múltiplos registros em paralelo
 
-## ReferÃªncias
+## Referências
 
-- [ADR 002: EstratÃ©gia de MigraÃ§Ã£o](002-migration-strategy.md)
-- [Fluxo de MigraÃ§Ã£o](../architecture/migration_diagram.md)
+- [ADR 002: Estratégia de Migração](002-migration-strategy.md)
+- [Fluxo de Migração](../architecture/migration_diagram.md)
 - [MigrationService.php](../../api/services/MigrationService.php#L41-L69)
-

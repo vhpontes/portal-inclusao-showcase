@@ -1,4 +1,4 @@
-﻿# ADR 001: Escolha da Stack TecnolÃ³gica Vue.js + PHP
+# ADR 001: Escolha da Stack Tecnológica Vue.js + PHP
 
 **Status**: Aceito  
 **Data**: 2024-01-15  
@@ -6,88 +6,87 @@
 
 ## Contexto
 
-O Portal de InclusÃ£o precisava de uma stack tecnolÃ³gica que atendesse aos seguintes requisitos:
+O Portal de Inclusão precisava de uma stack tecnológica que atendesse aos seguintes requisitos:
 - Interface moderna e responsiva
-- Desenvolvimento rÃ¡pido com recursos limitados
+- Desenvolvimento rápido com recursos limitados
 - Compatibilidade com infraestrutura existente (XAMPP/Apache)
-- Facilidade de manutenÃ§Ã£o pela equipe municipal
+- Facilidade de manutenção pela equipe municipal
 
-## DecisÃ£o
+## Decisão
 
 Adotamos **Vue.js 3** para o frontend e **PHP 8+** para o backend.
 
 ### Frontend: Vue.js 3
 - Framework progressivo com curva de aprendizado suave
-- Composition API para melhor organizaÃ§Ã£o de cÃ³digo
+- Composition API para melhor organização de código
 - Ecossistema rico (Vue Router, Vite)
-- Excelente documentaÃ§Ã£o em portuguÃªs
+- Excelente documentação em português
 
 ### Backend: PHP 8+
-- JÃ¡ utilizado em outros sistemas municipais
-- FÃ¡cil deploy em servidores Apache/XAMPP
+- Já utilizado em outros sistemas municipais
+- Fácil deploy em servidores Apache/XAMPP
 - PDO nativo para acesso a banco de dados
 - Sem necessidade de frameworks pesados
 
 ## Alternativas Consideradas
 
 ### 1. React + Node.js
-**PrÃ³s:**
+**Prós:**
 - Ecossistema maior
-- Melhor para aplicaÃ§Ãµes complexas
+- Melhor para aplicações complexas
 
 **Contras:**
-- Curva de aprendizado mais Ã­ngreme
-- Requer Node.js em produÃ§Ã£o
+- Curva de aprendizado mais íngreme
+- Requer Node.js em produção
 - Mais complexo para equipe pequena
 
 ### 2. Laravel + Blade
-**PrÃ³s:**
+**Prós:**
 - Framework PHP completo
-- ConvenÃ§Ãµes estabelecidas
+- Convenções estabelecidas
 
 **Contras:**
-- Overhead desnecessÃ¡rio para API simples
-- Blade nÃ£o oferece reatividade moderna
-- Mais pesado que soluÃ§Ã£o atual
+- Overhead desnecessário para API simples
+- Blade não oferece reatividade moderna
+- Mais pesado que solução atual
 
 ### 3. WordPress + Plugins
-**PrÃ³s:**
+**Prós:**
 - Familiaridade da equipe
 - Admin pronto
 
 **Contras:**
-- NÃ£o adequado para aplicaÃ§Ã£o customizada
+- Não adequado para aplicação customizada
 - Performance inferior
-- SeguranÃ§a questionÃ¡vel
+- Segurança questionável
 
-## ConsequÃªncias
+## Consequências
 
 ### Positivas
-âœ… Desenvolvimento rÃ¡pido e iterativo  
-âœ… FÃ¡cil onboarding de novos desenvolvedores  
-âœ… Deploy simples em infraestrutura existente  
-âœ… SeparaÃ§Ã£o clara frontend/backend  
-âœ… Possibilidade de migrar backend futuramente sem afetar frontend  
+✅ Desenvolvimento rápido e iterativo  
+✅ Fácil onboarding de novos desenvolvedores  
+✅ Deploy simples em infraestrutura existente  
+✅ Separação clara frontend/backend  
+✅ Possibilidade de migrar backend futuramente sem afetar frontend  
 
 ### Negativas
-âš ï¸ PHP nÃ£o Ã© ideal para aplicaÃ§Ãµes real-time  
-âš ï¸ Escalabilidade limitada comparada a Node.js  
-âš ï¸ Sem tipagem estÃ¡tica no backend (mitigado com PHPStan)  
+⚠️ PHP não é ideal para aplicações real-time  
+⚠️ Escalabilidade limitada comparada a Node.js  
+⚠️ Sem tipagem estática no backend (mitigado com PHPStan)  
 
 ### Neutras
 - Necessidade de dois servidores em desenvolvimento (Vite + PHP)
-- AutenticaÃ§Ã£o via token em localStorage (padrÃ£o para SPAs)
+- Autenticação via token em localStorage (padrão para SPAs)
 
-## Notas de ImplementaÃ§Ã£o
+## Notas de Implementação
 
-- **Vite** escolhido como build tool (mais rÃ¡pido que Webpack)
-- **TailwindCSS** para estilizaÃ§Ã£o (produtividade)
-- **PDO** para banco de dados (seguranÃ§a contra SQL injection)
+- **Vite** escolhido como build tool (mais rápido que Webpack)
+- **TailwindCSS** para estilização (produtividade)
+- **PDO** para banco de dados (segurança contra SQL injection)
 - Servidor PHP built-in para desenvolvimento (`php -S`)
 
-## ReferÃªncias
+## Referências
 
 - [Vue.js Documentation](https://vuejs.org/)
 - [PHP: The Right Way](https://phptherightway.com/)
-- [VisÃ£o Geral da Arquitetura](../architecture/overview.md)
-
+- [Visão Geral da Arquitetura](../architecture/overview.md)

@@ -1,37 +1,37 @@
-﻿# AnÃ¡lise do Dashboard e Analytics
+# Análise do Dashboard e Analytics
 
-## VisÃ£o Geral
-A Ã¡rea de Dashboard do Portal InclusÃ£o Ã© composta por dois mÃ³dulos principais no frontend e um controlador dedicado no backend.
+## Visão Geral
+A área de Dashboard do Portal Inclusão é composta por dois módulos principais no frontend e um controlador dedicado no backend.
 
 ### 1. Dashboard Principal (AdminDashboard.vue)
-O painel de entrada administrativo fornece uma visÃ£o operacional rÃ¡pida.
+O painel de entrada administrativo fornece uma visão operacional rápida.
 
 **Funcionalidades:**
 - **KPIs (Indicadores Chave):**
-  - Total de BeneficiÃ¡rios
+  - Total de Beneficiários
   - Novos Cadastros (Hoje)
-  - SolicitaÃ§Ãµes Aguardando AnÃ¡lise
-- **GrÃ¡ficos BÃ¡sicos:**
-  - Cadastros por MÃªs (HistÃ³rico de 6 meses)
-  - Top 5 DeficiÃªncias (DistribuiÃ§Ã£o)
+  - Solicitações Aguardando Análise
+- **Gráficos Básicos:**
+  - Cadastros por Mês (Histórico de 6 meses)
+  - Top 5 Deficiências (Distribuição)
 - **Operacional:**
-  - Lista de SolicitaÃ§Ãµes Pendentes (Ãšltimas)
-  - Atalhos RÃ¡pidos: UsuÃ¡rios, RelatÃ³rios, MigraÃ§Ã£o, HistÃ³rico, ConfiguraÃ§Ãµes, BI.
+  - Lista de Solicitações Pendentes (Últimas)
+  - Atalhos Rápidos: Usuários, Relatórios, Migração, Histórico, Configurações, BI.
 
 **Dados:** Consome `/api/dashboard/stats` + `/api/solicitacoes`.
 
 ### 2. Business Intelligence (AdminAnalytics.vue)
-Um painel estratÃ©gico avanÃ§ado focado em anÃ¡lise demogrÃ¡fica e de gestÃ£o.
+Um painel estratégico avançado focado em análise demográfica e de gestão.
 
 **Funcionalidades:**
-- **KPIs EstratÃ©gicos:** Censo Total, Fluxo de Auditoria (7 dias), ProjeÃ§Ã£o de RenovaÃ§Ãµes.
-- **GrÃ¡ficos AvanÃ§ados:**
+- **KPIs Estratégicos:** Censo Total, Fluxo de Auditoria (7 dias), Projeção de Renovações.
+- **Gráficos Avançados:**
   - Fluxo de Atividade (Linha com gradiente SVG)
-  - Cronograma de RenovaÃ§Ãµes (PrÃ³ximos 12 meses)
-  - DistribuiÃ§Ã£o EtÃ¡ria (GrÃ¡fico de Donut SVG interativo)
+  - Cronograma de Renovações (Próximos 12 meses)
+  - Distribuição Etária (Gráfico de Donut SVG interativo)
   - Top 5 Bairros (Barras)
-- **GeolocalizaÃ§Ã£o:**
-  - Mapa de Calor GeogrÃ¡fico (HeatMap) visualizando a densidade de beneficiÃ¡rios por bairro.
+- **Geolocalização:**
+  - Mapa de Calor Geográfico (HeatMap) visualizando a densidade de beneficiários por bairro.
   - Componentes: `HeatMapInline.vue`, `HeatMapModal.vue`.
 
 **Dados:** Consome `/api/dashboard/analytics` + `/api/dashboard/geostats`.
@@ -41,40 +41,39 @@ Um painel estratÃ©gico avanÃ§ado focado em anÃ¡lise demogrÃ¡fica e de ge
 ## Estrutura do Backend (API)
 
 ### Roteamento (`api/index.php`)
-As rotas estÃ£o mapeadas corretamente para o `DashboardController`:
+As rotas estão mapeadas corretamente para o `DashboardController`:
 - `GET /api/dashboard/stats` -> `getStats()`
 - `GET /api/dashboard/analytics` -> `getAdvancedStats()`
 - `GET /api/dashboard/geostats` -> `getGeostats()`
 
 ### Controlador (`DashboardController.php`)
 
-#### MÃ©todo `getStats()`
-ResponsÃ¡vel pelos dados do dashboard operacional.
+#### Método `getStats()`
+Responsável pelos dados do dashboard operacional.
 - **Queries:** Contagens simples (COUNT) para KPIs.
-- **HistÃ³rico:** Agrupamento por mÃªs (`DATE_FORMAT`).
-- **Ponto de AtenÃ§Ã£o:** A lÃ³gica de "Top DeficiÃªncias" recupera todos os beneficiÃ¡rios e processa o JSON no PHP. Isso pode se tornar lento com o crescimento da base de dados. Sugere-se normalizaÃ§Ã£o futura ou cache.
+- **Histórico:** Agrupamento por mês (`DATE_FORMAT`).
+- **Ponto de Atenção:** A lógica de "Top Deficiências" recupera todos os beneficiários e processa o JSON no PHP. Isso pode se tornar lento com o crescimento da base de dados. Sugere-se normalização futura ou cache.
 
-#### MÃ©todo `getAdvancedStats()`
-ResponsÃ¡vel pelos dados do BI.
+#### Método `getAdvancedStats()`
+Responsável pelos dados do BI.
 - **Censo Bairros:** Agrupamento SQL.
-- **Censo Idades:** Usa `TIMESTAMPDIFF` no SQL para classificar faixas etÃ¡rias (Eficiente).
-- **ProjeÃ§Ã£o RenovaÃ§Ãµes:** Calcula datas futuras (+5 anos) para prever carga de trabalho.
+- **Censo Idades:** Usa `TIMESTAMPDIFF` no SQL para classificar faixas etárias (Eficiente).
+- **Projeção Renovações:** Calcula datas futuras (+5 anos) para prever carga de trabalho.
 
-#### MÃ©todo `getGeostats()`
+#### Método `getGeostats()`
 - Retorna dados brutos de contagem por bairro para plotagem no mapa.
 
 ---
 
 ## Componentes Envolvidos
 
-| Componente | Tipo | FunÃ§Ã£o |
+| Componente | Tipo | Função |
 |------------|------|--------|
-| `AdminDashboard.vue` | View | Entrada administrativa, visÃ£o operacional. |
-| `AdminAnalytics.vue` | View | VisÃ£o estratÃ©gica, grÃ¡ficos complexos. |
-| `HeatMapInline.vue` | Component | VisualizaÃ§Ã£o de mapa simplificada. |
-| `HeatMapModal.vue` | Component | VisualizaÃ§Ã£o de mapa expandida. |
-| `DashboardController.php` | Controller | LÃ³gica de negÃ³cios e agregaÃ§Ã£o de dados. |
+| `AdminDashboard.vue` | View | Entrada administrativa, visão operacional. |
+| `AdminAnalytics.vue` | View | Visão estratégica, gráficos complexos. |
+| `HeatMapInline.vue` | Component | Visualização de mapa simplificada. |
+| `HeatMapModal.vue` | Component | Visualização de mapa expandida. |
+| `DashboardController.php` | Controller | Lógica de negócios e agregação de dados. |
 
-## ConclusÃ£o
-A arquitetura estÃ¡ bem segmentada entre "Operacional" (Dashboard) e "EstratÃ©gico" (Analytics). O frontend utiliza grÃ¡ficos SVG customizados (sem bibliotecas pesadas de charts), o que garante alta performance. O backend Ã© eficiente, com ressalva apenas para o processamento de JSON das deficiÃªncias.
-
+## Conclusão
+A arquitetura está bem segmentada entre "Operacional" (Dashboard) e "Estratégico" (Analytics). O frontend utiliza gráficos SVG customizados (sem bibliotecas pesadas de charts), o que garante alta performance. O backend é eficiente, com ressalva apenas para o processamento de JSON das deficiências.

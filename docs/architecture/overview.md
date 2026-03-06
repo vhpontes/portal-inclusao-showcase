@@ -1,52 +1,52 @@
-﻿# VisÃ£o Geral da Arquitetura - Portal de InclusÃ£o
+# Visão Geral da Arquitetura - Portal de Inclusão
 
-## IntroduÃ§Ã£o
+## Introdução
 
-O **Portal de InclusÃ£o** Ã© um sistema web para gestÃ£o de solicitaÃ§Ãµes de carteiras de identificaÃ§Ã£o (CIPTEA e Girassol) para pessoas com deficiÃªncia no municÃ­pio de PoÃ§os de Caldas/MG. O sistema inclui funcionalidades avanÃ§adas de migraÃ§Ã£o de dados de sistemas legados.
+O **Portal de Inclusão** é um sistema web para gestão de solicitações de carteiras de identificação (CIPTEA e Girassol) para pessoas com deficiência no município de Poços de Caldas/MG. O sistema inclui funcionalidades avançadas de migração de dados de sistemas legados.
 
-## Diagrama C4 - NÃ­vel 1: Contexto do Sistema
+## Diagrama C4 - Nível 1: Contexto do Sistema
 
 ```mermaid
 C4Context
-    title Diagrama de Contexto - Portal de InclusÃ£o
+    title Diagrama de Contexto - Portal de Inclusão
     
-    Person(cidadao, "CidadÃ£o", "Pessoa com deficiÃªncia ou responsÃ¡vel legal")
-    Person(admin, "Administrador", "Servidor municipal da Secretaria de SaÃºde")
+    Person(cidadao, "Cidadão", "Pessoa com deficiência ou responsável legal")
+    Person(admin, "Administrador", "Servidor municipal da Secretaria de Saúde")
     
-    System(portal, "Portal de InclusÃ£o", "Sistema web para solicitaÃ§Ã£o e gestÃ£o de carteiras CIPTEA/Girassol")
+    System(portal, "Portal de Inclusão", "Sistema web para solicitação e gestão de carteiras CIPTEA/Girassol")
     
     System_Ext(legado, "Sistema Legado", "Banco de dados do sistema anterior (Cadastro)")
-    System_Ext(n8n, "n8n Workflow", "AutomaÃ§Ã£o de processos e integraÃ§Ãµes")
-    System_Ext(email, "Servidor de Email", "Envio de notificaÃ§Ãµes")
+    System_Ext(n8n, "n8n Workflow", "Automação de processos e integrações")
+    System_Ext(email, "Servidor de Email", "Envio de notificações")
     
     Rel(cidadao, portal, "Solicita carteira, acompanha status", "HTTPS")
-    Rel(admin, portal, "Gerencia solicitaÃ§Ãµes, aprova/rejeita", "HTTPS")
-    Rel(portal, legado, "Migra dados histÃ³ricos", "MySQL/TCP")
+    Rel(admin, portal, "Gerencia solicitações, aprova/rejeita", "HTTPS")
+    Rel(portal, legado, "Migra dados históricos", "MySQL/TCP")
     Rel(portal, n8n, "Dispara workflows", "HTTP/Webhook")
-    Rel(portal, email, "Envia notificaÃ§Ãµes", "SMTP")
+    Rel(portal, email, "Envia notificações", "SMTP")
 ```
 
-## Diagrama C4 - NÃ­vel 2: ContÃªineres
+## Diagrama C4 - Nível 2: Contêineres
 
 ```mermaid
 C4Container
-    title Diagrama de ContÃªineres - Portal de InclusÃ£o
+    title Diagrama de Contêineres - Portal de Inclusão
     
-    Person(user, "UsuÃ¡rio", "CidadÃ£o ou Administrador")
+    Person(user, "Usuário", "Cidadão ou Administrador")
     
-    Container_Boundary(portal, "Portal de InclusÃ£o") {
+    Container_Boundary(portal, "Portal de Inclusão") {
         Container(spa, "Frontend SPA", "Vue.js 3, Vite", "Interface web responsiva com componentes reativos")
-        Container(api, "Backend API", "PHP 8+, PDO", "API REST para lÃ³gica de negÃ³cio e acesso a dados")
-        ContainerDb(db, "Banco de Dados", "MySQL 8.0", "Armazena usuÃ¡rios, beneficiÃ¡rios, solicitaÃ§Ãµes e documentos")
+        Container(api, "Backend API", "PHP 8+, PDO", "API REST para lógica de negócio e acesso a dados")
+        ContainerDb(db, "Banco de Dados", "MySQL 8.0", "Armazena usuários, beneficiários, solicitações e documentos")
     }
     
     System_Ext(legado_db, "Banco Legado", "MySQL - Sistema anterior")
     System_Ext(storage, "File Storage", "Sistema de arquivos local")
     
     Rel(user, spa, "Acessa via navegador", "HTTPS")
-    Rel(spa, api, "Faz requisiÃ§Ãµes", "JSON/REST")
-    Rel(api, db, "LÃª/Escreve dados", "PDO/MySQL")
-    Rel(api, legado_db, "Migra dados histÃ³ricos", "PDO/MySQL")
+    Rel(spa, api, "Faz requisições", "JSON/REST")
+    Rel(api, db, "Lê/Escreve dados", "PDO/MySQL")
+    Rel(api, legado_db, "Migra dados históricos", "PDO/MySQL")
     Rel(api, storage, "Armazena uploads", "File System")
 ```
 
@@ -57,14 +57,14 @@ graph TB
     subgraph "Backend API (PHP)"
         Router[index.php<br/>Router] --> Controllers{Controllers}
         
-        Controllers --> AuthCtrl[AuthController<br/>Login/AutenticaÃ§Ã£o]
-        Controllers --> ReqCtrl[RequestController<br/>SolicitaÃ§Ãµes CRUD]
-        Controllers --> MigCtrl[MigrationController<br/>MigraÃ§Ã£o de Dados]
-        Controllers --> DashCtrl[DashboardController<br/>EstatÃ­sticas]
-        Controllers --> RepCtrl[ReportController<br/>RelatÃ³rios]
+        Controllers --> AuthCtrl[AuthController<br/>Login/Autenticação]
+        Controllers --> ReqCtrl[RequestController<br/>Solicitações CRUD]
+        Controllers --> MigCtrl[MigrationController<br/>Migração de Dados]
+        Controllers --> DashCtrl[DashboardController<br/>Estatísticas]
+        Controllers --> RepCtrl[ReportController<br/>Relatórios]
         Controllers --> SecCtrl[SecurityController<br/>Criptografia]
         
-        MigCtrl --> MigSvc[MigrationService<br/>LÃ³gica de MigraÃ§Ã£o]
+        MigCtrl --> MigSvc[MigrationService<br/>Lógica de Migração]
         
         AuthCtrl --> DB[(Database)]
         ReqCtrl --> DB
@@ -90,18 +90,18 @@ graph TB
     subgraph "Frontend Vue.js"
         Router[Vue Router] --> Views{Views}
         
-        Views --> Home[Home.vue<br/>PÃ¡gina Inicial]
+        Views --> Home[Home.vue<br/>Página Inicial]
         Views --> Login[AdminLogin.vue<br/>Login Admin]
         Views --> Dashboard[AdminDashboard.vue<br/>Painel Admin]
-        Views --> Migration[AdminMigration.vue<br/>Centro de MigraÃ§Ã£o]
+        Views --> Migration[AdminMigration.vue<br/>Centro de Migração]
         Views --> Mapper[AdminMapper.vue<br/>Mapeador Visual]
-        Views --> ReqDetails[AdminRequestDetails.vue<br/>Detalhes SolicitaÃ§Ã£o]
+        Views --> ReqDetails[AdminRequestDetails.vue<br/>Detalhes Solicitação]
         
         Migration --> DebugConsole[DebugConsole.vue<br/>Console de Debug]
-        Migration --> BaseModal[BaseModal.vue<br/>Modal ReutilizÃ¡vel]
+        Migration --> BaseModal[BaseModal.vue<br/>Modal Reutilizável]
         Migration --> Encryption[AdminEncryption.vue<br/>Teste Criptografia]
         
-        Mapper --> TableNode[TableNode.vue<br/>NÃ³ de Tabela]
+        Mapper --> TableNode[TableNode.vue<br/>Nó de Tabela]
         Mapper --> VueFlow[VueFlow Library<br/>Drag & Drop]
     end
     
@@ -114,109 +114,108 @@ graph TB
 ## Tecnologias Utilizadas
 
 ### Frontend
-| Tecnologia | VersÃ£o | PropÃ³sito |
+| Tecnologia | Versão | Propósito |
 |------------|--------|-----------|
 | Vue.js | 3.x | Framework progressivo para UI reativa |
-| Vite | 5.x | Build tool e dev server rÃ¡pido |
+| Vite | 5.x | Build tool e dev server rápido |
 | Vue Router | 4.x | Roteamento SPA |
-| TailwindCSS | 3.x | Framework CSS utilitÃ¡rio |
+| TailwindCSS | 3.x | Framework CSS utilitário |
 | @vue-flow/core | Latest | Biblioteca para diagramas interativos |
 
 ### Backend
-| Tecnologia | VersÃ£o | PropÃ³sito |
+| Tecnologia | Versão | Propósito |
 |------------|--------|-----------|
 | PHP | 8.0+ | Linguagem server-side |
-| PDO | Nativo | AbstraÃ§Ã£o de banco de dados |
+| PDO | Nativo | Abstração de banco de dados |
 | OpenSSL | Nativo | Criptografia AES-256-CBC |
 
 ### Banco de Dados
-| Tecnologia | VersÃ£o | PropÃ³sito |
+| Tecnologia | Versão | Propósito |
 |------------|--------|-----------|
 | MySQL | 8.0 | Banco de dados relacional |
-| Host | pocos-acolhedora-srv | Servidor de produÃ§Ã£o |
+| Host | pocos-acolhedora-srv | Servidor de produção |
 
 ### Infraestrutura
-| Componente | Tecnologia | PropÃ³sito |
+| Componente | Tecnologia | Propósito |
 |------------|------------|-----------|
 | Web Server | PHP Built-in | Desenvolvimento (porta 8000) |
 | Frontend Server | Vite Dev | Desenvolvimento (porta 5173) |
-| Debug Console | DebugConsole.vue | Monitoramento de conexÃ£o DB |
+| Debug Console | DebugConsole.vue | Monitoramento de conexão DB |
 
 ## Fluxo de Dados Principal
 
 ```mermaid
 sequenceDiagram
-    participant U as UsuÃ¡rio
+    participant U as Usuário
     participant F as Frontend (Vue)
     participant A as API (PHP)
     participant D as Database (MySQL)
     
-    U->>F: Acessa aplicaÃ§Ã£o
+    U->>F: Acessa aplicação
     F->>A: GET /api/status
-    A->>D: Verifica conexÃ£o
+    A->>D: Verifica conexão
     D-->>A: Status OK
     A-->>F: {status: "ok"}
     F-->>U: Exibe interface
     
-    U->>F: Submete solicitaÃ§Ã£o
+    U->>F: Submete solicitação
     F->>A: POST /api/solicitacoes
     A->>D: INSERT INTO solicitacoes
     A->>D: INSERT INTO documentos
     D-->>A: IDs criados
     A-->>F: {success: true, protocolo: "..."}
-    F-->>U: ConfirmaÃ§Ã£o + Protocolo
+    F-->>U: Confirmação + Protocolo
 ```
 
-## PadrÃµes Arquiteturais
+## Padrões Arquiteturais
 
 ### Backend
-- **PSR-4 Autoloading**: Carregamento automÃ¡tico de classes via namespaces (`App\`).
+- **PSR-4 Autoloading**: Carregamento automático de classes via namespaces (`App\`).
 - **Repository Pattern**: Isolamento total do SQL, facilitando a testabilidade e troca de banco.
-- **Service Layer**: CentralizaÃ§Ã£o da lÃ³gica de negÃ³cio (ex: `RequestService`, `DashboardService`).
-- **Middleware System**: InterceptaÃ§Ã£o de rotas para seguranÃ§a e validaÃ§Ã£o (JWT).
-- **JWT Authentication**: Sistema de tokens HS256 real para proteÃ§Ã£o de Ã¡reas administrativas.
+- **Service Layer**: Centralização da lógica de negócio (ex: `RequestService`, `DashboardService`).
+- **Middleware System**: Interceptação de rotas para segurança e validação (JWT).
+- **JWT Authentication**: Sistema de tokens HS256 real para proteção de áreas administrativas.
 - **MVC Simplificado**: Estrutura organizada para escalabilidade.
 
 ### Frontend
-- **Component-Based**: Componentes Vue reutilizÃ¡veis
-- **Single Page Application**: NavegaÃ§Ã£o sem reload
+- **Component-Based**: Componentes Vue reutilizáveis
+- **Single Page Application**: Navegação sem reload
 - **Reactive State**: Refs e computed properties
-- **Composition API**: Setup script para lÃ³gica de componentes
+- **Composition API**: Setup script para lógica de componentes
 
-## SeguranÃ§a
+## Segurança
 
-### AutenticaÃ§Ã£o
+### Autenticação
 - Login via email/senha
 - Senha hash com `password_hash()` (bcrypt)
 - Token armazenado em `localStorage`
-- Guard de navegaÃ§Ã£o para rotas protegidas
+- Guard de navegação para rotas protegidas
 
-### AutorizaÃ§Ã£o
+### Autorização
 - Perfis: `cidadao` e `admin`
 - Rotas administrativas protegidas por `meta.requiresAuth`
-- VerificaÃ§Ã£o de perfil no backend
+- Verificação de perfil no backend
 
 ### Criptografia
 - **Algoritmo**: AES-256-CBC
-- **Uso**: Dados sensÃ­veis do sistema legado (CPF, RG, CNS)
+- **Uso**: Dados sensíveis do sistema legado (CPF, RG, CNS)
 - **Chaves**: Definidas em `SecurityController` e `MigrationService`
 
-## PrÃ³ximos Passos
+## Próximos Passos
 
-Consulte a documentaÃ§Ã£o especÃ­fica:
-- [Arquitetura de MigraÃ§Ã£o](migration_architecture.md)
-- [Status de ModernizaÃ§Ã£o](modernization_status.md)
+Consulte a documentação específica:
+- [Arquitetura de Migração](migration_architecture.md)
+- [Status de Modernização](modernization_status.md)
 - [Schema do Banco de Dados](database_schema.md)
-- [EspecificaÃ§Ã£o da API](../api/spec.yaml)
+- [Especificação da API](../api/spec.yaml)
 
 ---
-### ðŸ•°ï¸ HistÃ³rico de AtualizaÃ§Ãµes
-| Data | VersÃ£o | Resumo | Autor |
+### 🕰️ Histórico de Atualizações
+| Data | Versão | Resumo | Autor |
 | :--- | :--- | :--- | :--- |
-| 18/02/2026 11:15 | 1.2 | RevisÃ£o da arquitetura apÃ³s migraÃ§Ã£o para Composer e limpeza tÃ©cnica. | Victor Hugo Manata Pontes |
-| 18/02/2026 09:00 | 1.1 | Melhorias de performance: Caching e IndexaÃ§Ã£o SQL. | Victor Hugo Manata Pontes |
-| 14/02/2026 16:00 | 0.8 | PadronizaÃ§Ã£o de Modais e Componentes UI. | Victor Hugo Manata Pontes |
-| 09/02/2026 10:00 | 0.6 | Dashboard BI e MÃ³dulo de Geoprocessamento. | Victor Hugo Manata Pontes |
+| 18/02/2026 11:15 | 1.2 | Revisão da arquitetura após migração para Composer e limpeza técnica. | Victor Hugo Manata Pontes |
+| 18/02/2026 09:00 | 1.1 | Melhorias de performance: Caching e Indexação SQL. | Victor Hugo Manata Pontes |
+| 14/02/2026 16:00 | 0.8 | Padronização de Modais e Componentes UI. | Victor Hugo Manata Pontes |
+| 09/02/2026 10:00 | 0.6 | Dashboard BI e Módulo de Geoprocessamento. | Victor Hugo Manata Pontes |
 | 08/02/2026 09:00 | 0.5 | Landing Page e Wizard de Cadastro. | Victor Hugo Manata Pontes |
-| 01/02/2026 14:00 | 0.1 | DefiniÃ§Ã£o inicial da arquitetura de containers. | Victor Hugo Manata Pontes |
-
+| 01/02/2026 14:00 | 0.1 | Definição inicial da arquitetura de containers. | Victor Hugo Manata Pontes |

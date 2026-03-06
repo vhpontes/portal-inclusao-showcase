@@ -1,12 +1,12 @@
-﻿# Mapeador Visual de Dados - AdminMapper.vue
+# Mapeador Visual de Dados - AdminMapper.vue
 
-## VisÃ£o Geral
+## Visão Geral
 
-O **Mapeador Visual** Ã© uma ferramenta interativa que permite criar mapeamentos entre tabelas de bancos de dados diferentes atravÃ©s de uma interface drag-and-drop. Ã‰ especialmente Ãºtil para configurar migraÃ§Ãµes de dados complexas.
+O **Mapeador Visual** é uma ferramenta interativa que permite criar mapeamentos entre tabelas de bancos de dados diferentes através de uma interface drag-and-drop. É especialmente útil para configurar migrações de dados complexas.
 
 ## Funcionalidades
 
-### 1. VisualizaÃ§Ã£o de Tabelas
+### 1. Visualização de Tabelas
 
 ```mermaid
 graph LR
@@ -20,37 +20,37 @@ graph LR
     Canvas --> Node2[TableNode<br/>beneficiarios]
 ```
 
-**CaracterÃ­sticas:**
-- **Sidebar**: Lista todas as tabelas disponÃ­veis (Auto-filtragem de prefixos)
-- **Origem (Azul)**: Exibe **apenas** tabelas iniciadas com `legado_` para facilitar a identificaÃ§Ã£o.
+**Características:**
+- **Sidebar**: Lista todas as tabelas disponíveis (Auto-filtragem de prefixos)
+- **Origem (Azul)**: Exibe **apenas** tabelas iniciadas com `legado_` para facilitar a identificação.
 - **Destino (Verde)**: Tabelas do banco atual
-- **Canvas**: Ãrea de trabalho com zoom e pan
+- **Canvas**: Área de trabalho com zoom e pan
 
 ### 2. Drag & Drop de Tabelas
 
 **Como usar:**
 1. Arraste uma tabela da sidebar para o canvas
 2. O sistema busca automaticamente o schema da tabela
-3. A tabela aparece como um nÃ³ com todos os campos listados
+3. A tabela aparece como um nó com todos os campos listados
 
-**Exemplo de NÃ³:**
+**Exemplo de Nó:**
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ legado_cadastro         â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚ â—‹ Id (int)              â”‚
-â”‚ â—‹ Nome (varchar)        â”‚
-â”‚ â—‹ CPF (text)            â”‚
-â”‚ â—‹ Nascimento (date)     â”‚
-â”‚ â—‹ Mae (varchar)         â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌─────────────────────────┐
+│ legado_cadastro         │
+├─────────────────────────┤
+│ ○ Id (int)              │
+│ ○ Nome (varchar)        │
+│ ○ CPF (text)            │
+│ ○ Nascimento (date)     │
+│ ○ Mae (varchar)         │
+└─────────────────────────┘
 ```
 
-### 3. CriaÃ§Ã£o de ConexÃµes
+### 3. Criação de Conexões
 
 **Conectar Campos:**
-1. Clique no cÃ­rculo de um campo de origem (azul)
-2. Arraste atÃ© o cÃ­rculo de um campo de destino (verde)
+1. Clique no círculo de um campo de origem (azul)
+2. Arraste até o círculo de um campo de destino (verde)
 3. Uma linha conecta os dois campos
 
 **Exemplo de Mapeamento:**
@@ -80,13 +80,13 @@ graph LR
     style D3 fill:#e1ffe1
 ```
 
-### 4. ExportaÃ§Ã£o e ImportaÃ§Ã£o
+### 4. Exportação e Importação
 
 #### Exportar JSON
 Salva o mapeamento completo incluindo:
-- PosiÃ§Ãµes dos nÃ³s no canvas
-- Todas as conexÃµes entre campos
-- Metadados (data, versÃ£o)
+- Posições dos nós no canvas
+- Todas as conexões entre campos
+- Metadados (data, versão)
 
 **Formato do Arquivo:**
 ```json
@@ -130,96 +130,96 @@ Salva o mapeamento completo incluindo:
 
 #### Importar JSON
 Restaura um mapeamento salvo anteriormente, recriando:
-- Todos os nÃ³s nas posiÃ§Ãµes originais
-- Todas as conexÃµes entre campos
+- Todos os nós nas posições originais
+- Todas as conexões entre campos
 
 ### 5. Salvar Mapeamento
 
-O botÃ£o **"Salvar Mapeamento"** persiste a configuraÃ§Ã£o no backend:
+O botão **"Salvar Mapeamento"** persiste a configuração no backend:
 - Arquivo: `migration_config.json`
 - Formato: Estrutura de mapeamento por par de tabelas
-- Uso: Aplicado automaticamente em migraÃ§Ãµes futuras
+- Uso: Aplicado automaticamente em migrações futuras
 
-## Interface do UsuÃ¡rio
+## Interface do Usuário
 
 ### Layout
 
 ```
-â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”
-â”‚ Mapeamento Visual                                      â”‚
-â”œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¬â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”¤
-â”‚          â”‚                                             â”‚
-â”‚ Tabelas  â”‚          Canvas Principal                   â”‚
-â”‚          â”‚                                             â”‚
-â”‚ â”Œâ”€â”€â”€â”€â”€â”€â” â”‚  â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”         â”Œâ”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”         â”‚
-â”‚ â”‚Origemâ”‚ â”‚  â”‚ Tabela 1 â”‚â”€â”€â”€â”€â”€â”€â”€â”€â–¶â”‚ Tabela 2 â”‚         â”‚
-â”‚ â”œâ”€â”€â”€â”€â”€â”€â”¤ â”‚  â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜         â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜         â”‚
-â”‚ â”‚ T1   â”‚ â”‚                                             â”‚
-â”‚ â”‚ T2   â”‚ â”‚                                             â”‚
-â”‚ â”‚ T3   â”‚ â”‚                                             â”‚
-â”‚ â””â”€â”€â”€â”€â”€â”€â”˜ â”‚                                             â”‚
-â”‚          â”‚                                             â”‚
-â”‚ â”Œâ”€â”€â”€â”€â”€â”€â” â”‚                                             â”‚
-â”‚ â”‚Dest. â”‚ â”‚                                             â”‚
-â”‚ â”œâ”€â”€â”€â”€â”€â”€â”¤ â”‚                                             â”‚
-â”‚ â”‚ T4   â”‚ â”‚  [Salvar] [Exportar] [Importar]            â”‚
-â”‚ â”‚ T5   â”‚ â”‚                                             â”‚
-â”‚ â””â”€â”€â”€â”€â”€â”€â”˜ â”‚                                             â”‚
-â””â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”´â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”˜
+┌────────────────────────────────────────────────────────┐
+│ Mapeamento Visual                                      │
+├──────────┬─────────────────────────────────────────────┤
+│          │                                             │
+│ Tabelas  │          Canvas Principal                   │
+│          │                                             │
+│ ┌──────┐ │  ┌──────────┐         ┌──────────┐         │
+│ │Origem│ │  │ Tabela 1 │────────▶│ Tabela 2 │         │
+│ ├──────┤ │  └──────────┘         └──────────┘         │
+│ │ T1   │ │                                             │
+│ │ T2   │ │                                             │
+│ │ T3   │ │                                             │
+│ └──────┘ │                                             │
+│          │                                             │
+│ ┌──────┐ │                                             │
+│ │Dest. │ │                                             │
+│ ├──────┤ │                                             │
+│ │ T4   │ │  [Salvar] [Exportar] [Importar]            │
+│ │ T5   │ │                                             │
+│ └──────┘ │                                             │
+└──────────┴─────────────────────────────────────────────┘
 ```
 
 ### Controles
 
-| BotÃ£o | AÃ§Ã£o |
+| Botão | Ação |
 |-------|------|
-| **Salvar Mapeamento** | Persiste configuraÃ§Ã£o no backend |
-| **Exportar JSON** | Download do arquivo de configuraÃ§Ã£o |
-| **Importar JSON** | Upload de configuraÃ§Ã£o salva |
+| **Salvar Mapeamento** | Persiste configuração no backend |
+| **Exportar JSON** | Download do arquivo de configuração |
+| **Importar JSON** | Upload de configuração salva |
 | **Zoom +/-** | Controles de zoom do VueFlow |
-| **Fit View** | Ajusta visualizaÃ§Ã£o para mostrar todos os nÃ³s |
+| **Fit View** | Ajusta visualização para mostrar todos os nós |
 
 ## Tecnologias Utilizadas
 
 - **@vue-flow/core**: Biblioteca para diagramas interativos
 - **@vue-flow/background**: Grid de fundo
-- **@vue-flow/controls**: Controles de zoom e navegaÃ§Ã£o
-- **Fetch API**: ComunicaÃ§Ã£o com backend
+- **@vue-flow/controls**: Controles de zoom e navegação
+- **Fetch API**: Comunicação com backend
 
 ## Casos de Uso
 
-### Caso 1: MigraÃ§Ã£o Simples
+### Caso 1: Migração Simples
 
 ```
-Objetivo: Migrar tabela legado_cadastro â†’ beneficiarios
+Objetivo: Migrar tabela legado_cadastro → beneficiarios
 
 Passos:
 1. Arrastar "legado_cadastro" para o canvas
 2. Arrastar "beneficiarios" para o canvas
 3. Conectar campos:
-   - Id â†’ legado_id
-   - Nome â†’ nome
-   - CPF â†’ cpf
-   - Nascimento â†’ data_nascimento
+   - Id → legado_id
+   - Nome → nome
+   - CPF → cpf
+   - Nascimento → data_nascimento
 4. Clicar em "Salvar Mapeamento"
-5. ConfiguraÃ§Ã£o aplicada automaticamente em migraÃ§Ãµes
+5. Configuração aplicada automaticamente em migrações
 ```
 
 ### Caso 2: Mapeamento Complexo
 
 ```
-Objetivo: Mapear mÃºltiplas tabelas com transformaÃ§Ãµes
+Objetivo: Mapear múltiplas tabelas com transformações
 
 Passos:
 1. Adicionar tabelas de origem: legado_cadastro, legado_arquivos
 2. Adicionar tabelas de destino: beneficiarios, documentos
-3. Criar conexÃµes entre campos relacionados
+3. Criar conexões entre campos relacionados
 4. Exportar JSON para backup
 5. Salvar mapeamento no sistema
 ```
 
-## IntegraÃ§Ã£o com MigraÃ§Ã£o
+## Integração com Migração
 
-O mapeamento salvo Ã© utilizado automaticamente pelo `MigrationService`:
+O mapeamento salvo é utilizado automaticamente pelo `MigrationService`:
 
 ```php
 // Backend: MigrationService.php
@@ -235,23 +235,22 @@ if (!empty($config['field_map'])) {
 }
 ```
 
-## LimitaÃ§Ãµes Conhecidas
+## Limitações Conhecidas
 
-- NÃ£o valida tipos de dados incompatÃ­veis
-- NÃ£o suporta transformaÃ§Ãµes complexas (ex: concatenaÃ§Ã£o)
-- Mapeamento 1:1 apenas (um campo origem â†’ um campo destino)
+- Não valida tipos de dados incompatíveis
+- Não suporta transformações complexas (ex: concatenação)
+- Mapeamento 1:1 apenas (um campo origem → um campo destino)
 
-## PrÃ³ximos Passos
+## Próximos Passos
 
-- [DocumentaÃ§Ã£o de MigraÃ§Ã£o](../architecture/migration_diagram.md)
-- [EspecificaÃ§Ã£o da API](../api/spec.yaml)
+- [Documentação de Migração](../architecture/migration_diagram.md)
+- [Especificação da API](../api/spec.yaml)
 
 ---
-### ðŸ•°ï¸ HistÃ³rico de AtualizaÃ§Ãµes
-| Data | VersÃ£o | Resumo | Autor |
+### 🕰️ Histórico de Atualizações
+| Data | Versão | Resumo | Autor |
 | :--- | :--- | :--- | :--- |
-| 18/02/2026 11:45 | 1.2 | SincronizaÃ§Ã£o estrutural e organizaÃ§Ã£o de metadados. | Victor Hugo Manata Pontes |
+| 18/02/2026 11:45 | 1.2 | Sincronização estrutural e organização de metadados. | Victor Hugo Manata Pontes |
 | 18/02/2026 09:00 | 1.1 | Melhorias de performance no processamento de mapeamento. | Victor Hugo Manata Pontes |
-| 14/02/2026 16:00 | 0.8 | RevisÃ£o visual dos nÃ³s de tabela. | Victor Hugo Manata Pontes |
-| 09/02/2026 18:00 | 1.0 | DocumentaÃ§Ã£o inicial da lÃ³gica do Mapeador Visual. | Victor Hugo Manata Pontes |
-
+| 14/02/2026 16:00 | 0.8 | Revisão visual dos nós de tabela. | Victor Hugo Manata Pontes |
+| 09/02/2026 18:00 | 1.0 | Documentação inicial da lógica do Mapeador Visual. | Victor Hugo Manata Pontes |

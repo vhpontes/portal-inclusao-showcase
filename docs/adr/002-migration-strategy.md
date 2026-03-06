@@ -1,22 +1,22 @@
-﻿# ADR 002: EstratÃ©gia de MigraÃ§Ã£o de Dados do Sistema Legado
+# ADR 002: Estratégia de Migração de Dados do Sistema Legado
 
 **Status**: Aceito  
 **Data**: 2024-02-01  
-**Decisores**: Equipe de Desenvolvimento DTI + Secretaria de SaÃºde
+**Decisores**: Equipe de Desenvolvimento DTI + Secretaria de Saúde
 
 ## Contexto
 
-O sistema legado (`pmpc_ciptea`) contÃ©m ~200 registros de beneficiÃ¡rios com dados criptografados (CPF, RG, CNS) usando AES-256-CBC. A migraÃ§Ã£o para o novo sistema apresenta desafios:
+O sistema legado (`pmpc_ciptea`) contém ~200 registros de beneficiários com dados criptografados (CPF, RG, CNS) usando AES-256-CBC. A migração para o novo sistema apresenta desafios:
 - Chaves de criptografia podem estar incorretas ou perdidas
-- Dados podem ter sido criptografados mÃºltiplas vezes
-- CPFs podem estar invÃ¡lidos ou duplicados
+- Dados podem ter sido criptografados múltiplas vezes
+- CPFs podem estar inválidos ou duplicados
 - Necessidade de rastreabilidade e auditoria
 
-## DecisÃ£o
+## Decisão
 
-Implementamos uma **estratÃ©gia de migraÃ§Ã£o progressiva** com as seguintes caracterÃ­sticas:
+Implementamos uma **estratégia de migração progressiva** com as seguintes características:
 
-### 1. PreservaÃ§Ã£o de Dados Originais
+### 1. Preservação de Dados Originais
 Criamos colunas `legacy_*` para backup dos dados criptografados:
 - `legacy_cpf` - CPF criptografado original
 - `legacy_rg` - RG criptografado original
@@ -24,88 +24,88 @@ Criamos colunas `legacy_*` para backup dos dados criptografados:
 
 ### 2. Tentativa de Descriptografia com Fallback
 ```
-Tentar descriptografar â†’ Sucesso? â†’ Usar valor
-                      â†’ Falha? â†’ NULL + Backup em legacy_*
+Tentar descriptografar → Sucesso? → Usar valor
+                      → Falha? → NULL + Backup em legacy_*
 ```
 
-### 3. ValidaÃ§Ã£o e SanitizaÃ§Ã£o
-- CPF: ValidaÃ§Ã£o de dÃ­gitos verificadores
-- Nome: ConversÃ£o para Title Case
-- Duplicatas: VerificaÃ§Ã£o por `legado_id` e `cpf`
+### 3. Validação e Sanitização
+- CPF: Validação de dígitos verificadores
+- Nome: Conversão para Title Case
+- Duplicatas: Verificação por `legado_id` e `cpf`
 
-### 4. Processo de RevalidaÃ§Ã£o
+### 4. Processo de Revalidação
 Interface administrativa permite:
-- ComparaÃ§Ã£o com dados legados
-- CorreÃ§Ã£o manual de dados
-- AprovaÃ§Ã£o em lote
+- Comparação com dados legados
+- Correção manual de dados
+- Aprovação em lote
 
 ## Alternativas Consideradas
 
-### 1. MigraÃ§Ã£o "Tudo ou Nada"
-**DescriÃ§Ã£o**: SÃ³ migrar registros com descriptografia bem-sucedida
+### 1. Migração "Tudo ou Nada"
+**Descrição**: Só migrar registros com descriptografia bem-sucedida
 
-**PrÃ³s:**
-- Dados sempre vÃ¡lidos
+**Prós:**
+- Dados sempre válidos
 - Sem campos NULL
 
 **Contras:**
-âŒ Perda de dados histÃ³ricos  
-âŒ ImpossÃ­vel recuperar registros posteriormente  
-âŒ NÃ£o atende requisito de preservaÃ§Ã£o  
+❌ Perda de dados históricos  
+❌ Impossível recuperar registros posteriormente  
+❌ Não atende requisito de preservação  
 
-### 2. Placeholders para Dados InvÃ¡lidos
-**DescriÃ§Ã£o**: Usar valores como "000.000.000-00" para CPF invÃ¡lido
+### 2. Placeholders para Dados Inválidos
+**Descrição**: Usar valores como "000.000.000-00" para CPF inválido
 
-**PrÃ³s:**
+**Prós:**
 - Sem campos NULL
 - Registros sempre completos
 
 **Contras:**
-âŒ Dados falsos no sistema  
-âŒ Problemas com validaÃ§Ã£o UNIQUE  
-âŒ ConfusÃ£o para usuÃ¡rios  
+❌ Dados falsos no sistema  
+❌ Problemas com validação UNIQUE  
+❌ Confusão para usuários  
 
-### 3. Tabela Separada para Registros ProblemÃ¡ticos
-**DescriÃ§Ã£o**: Migrar registros com problemas para tabela `beneficiarios_pendentes`
+### 3. Tabela Separada para Registros Problemáticos
+**Descrição**: Migrar registros com problemas para tabela `beneficiarios_pendentes`
 
-**PrÃ³s:**
-- SeparaÃ§Ã£o clara
-- NÃ£o polui tabela principal
+**Prós:**
+- Separação clara
+- Não polui tabela principal
 
 **Contras:**
-âŒ Complexidade adicional  
-âŒ Dois fluxos de aprovaÃ§Ã£o  
-âŒ Dificulta relatÃ³rios unificados  
+❌ Complexidade adicional  
+❌ Dois fluxos de aprovação  
+❌ Dificulta relatórios unificados  
 
-## DecisÃ£o Escolhida: MigraÃ§Ã£o com Backup
+## Decisão Escolhida: Migração com Backup
 
 ### Justificativa
-âœ… **PreservaÃ§Ã£o Total**: Nenhum dado Ã© perdido  
-âœ… **Rastreabilidade**: `legado_id` permite auditoria  
-âœ… **Flexibilidade**: Dados podem ser corrigidos posteriormente  
-âœ… **TransparÃªncia**: Administradores veem exatamente o que foi migrado  
+✅ **Preservação Total**: Nenhum dado é perdido  
+✅ **Rastreabilidade**: `legado_id` permite auditoria  
+✅ **Flexibilidade**: Dados podem ser corrigidos posteriormente  
+✅ **Transparência**: Administradores veem exatamente o que foi migrado  
 
-## ConsequÃªncias
+## Consequências
 
 ### Positivas
-âœ… Zero perda de dados histÃ³ricos  
-âœ… Possibilidade de melhorar descriptografia futuramente  
-âœ… Auditoria completa do processo  
-âœ… Interface de revalidaÃ§Ã£o permite correÃ§Ãµes  
+✅ Zero perda de dados históricos  
+✅ Possibilidade de melhorar descriptografia futuramente  
+✅ Auditoria completa do processo  
+✅ Interface de revalidação permite correções  
 
 ### Negativas
-âš ï¸ Campos `cpf`, `rg`, `cns` podem ser NULL  
-âš ï¸ Necessidade de validaÃ§Ã£o extra em queries  
-âš ï¸ Colunas `legacy_*` ocupam espaÃ§o adicional  
+⚠️ Campos `cpf`, `rg`, `cns` podem ser NULL  
+⚠️ Necessidade de validação extra em queries  
+⚠️ Colunas `legacy_*` ocupam espaço adicional  
 
-### MitigaÃ§Ãµes
-- ValidaÃ§Ã£o de CPF obrigatÃ³ria antes de aprovaÃ§Ã£o
-- Interface de revalidaÃ§Ã£o facilita correÃ§Ã£o
-- Colunas `legacy_*` podem ser removidas apÃ³s auditoria
+### Mitigações
+- Validação de CPF obrigatória antes de aprovação
+- Interface de revalidação facilita correção
+- Colunas `legacy_*` podem ser removidas após auditoria
 
-## ImplementaÃ§Ã£o
+## Implementação
 
-### Fluxo de MigraÃ§Ã£o
+### Fluxo de Migração
 ```mermaid
 flowchart TD
     A[Ler Registro Legado] --> B{Descriptografar CPF}
@@ -113,13 +113,13 @@ flowchart TD
     B -->|Falha| D[cpf = NULL<br/>legacy_cpf = original]
     C --> E{Validar CPF}
     D --> E
-    E -->|VÃ¡lido| F[Inserir BeneficiÃ¡rio]
-    E -->|InvÃ¡lido| G[Marcar para RevalidaÃ§Ã£o]
-    F --> H[Criar SolicitaÃ§Ã£o]
+    E -->|Válido| F[Inserir Beneficiário]
+    E -->|Inválido| G[Marcar para Revalidação]
+    F --> H[Criar Solicitação]
     G --> H
 ```
 
-### CÃ³digo Exemplo
+### Código Exemplo
 ```php
 // Tentar descriptografar
 $decryptedCpf = $this->my_simple_crypt($row['CPF'], 'd');
@@ -141,24 +141,23 @@ $stmt->execute([
 ]);
 ```
 
-## MÃ©tricas de Sucesso
+## Métricas de Sucesso
 
-| MÃ©trica | Valor Esperado | Valor Real |
+| Métrica | Valor Esperado | Valor Real |
 |---------|----------------|------------|
 | Taxa de Descriptografia | 60-70% | ~65% |
 | Registros Migrados | 100% | 100% |
 | Duplicatas Evitadas | >95% | 98% |
-| RevalidaÃ§Ãµes NecessÃ¡rias | <40% | 35% |
+| Revalidações Necessárias | <40% | 35% |
 
-## RevisÃµes Futuras
+## Revisões Futuras
 
-- **3 meses**: Avaliar se colunas `legacy_*` ainda sÃ£o necessÃ¡rias
-- **6 meses**: Considerar remoÃ§Ã£o apÃ³s auditoria completa
-- **1 ano**: Documentar liÃ§Ãµes aprendidas para futuras migraÃ§Ãµes
+- **3 meses**: Avaliar se colunas `legacy_*` ainda são necessárias
+- **6 meses**: Considerar remoção após auditoria completa
+- **1 ano**: Documentar lições aprendidas para futuras migrações
 
-## ReferÃªncias
+## Referências
 
-- [Fluxo de MigraÃ§Ã£o](../architecture/migration_diagram.md)
+- [Fluxo de Migração](../architecture/migration_diagram.md)
 - [ADR 003: Tratamento de Criptografia](003-encryption-handling.md)
-- [DocumentaÃ§Ã£o do MigrationService](../api/spec.yaml#/components/schemas/ConfigMigracao)
-
+- [Documentação do MigrationService](../api/spec.yaml#/components/schemas/ConfigMigracao)

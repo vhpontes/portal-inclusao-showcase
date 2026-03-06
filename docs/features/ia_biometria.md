@@ -1,41 +1,40 @@
-﻿# InteligÃªncia Artificial e Biometria
+# Inteligência Artificial e Biometria
 
-O Portal de InclusÃ£o utiliza tecnologias avanÃ§adas de visÃ£o computacional e processamento de documentos para garantir a autenticidade dos dados e facilitar o processo de inscriÃ§Ã£o.
+O Portal de Inclusão utiliza tecnologias avançadas de visão computacional e processamento de documentos para garantir a autenticidade dos dados e facilitar o processo de inscrição.
 
-## ðŸ“¸ Biometria Facial OACI
+## 📸 Biometria Facial OACI
 
-Implementamos um motor de validaÃ§Ã£o facial baseado no **MediaPipe**, que avalia a foto 3x4 do cidadÃ£o em tempo real.
+Implementamos um motor de validação facial baseado no **MediaPipe**, que avalia a foto 3x4 do cidadão em tempo real.
 
-### CritÃ©rios de ValidaÃ§Ã£o
-- **PresenÃ§a de Rosto**: Verifica se hÃ¡ uma face humana detectÃ¡vel.
-- **CentralizaÃ§Ã£o**: Garante que o rosto estÃ¡ posicionado corretamente no quadro.
-- **Qualidade de Imagem**: Analisa a nitidez (blur) e iluminaÃ§Ã£o.
-- **AcessÃ³rios**: Detecta o uso de Ã³culos escuros ou chapÃ©us que possam dificultar a identificaÃ§Ã£o.
+### Critérios de Validação
+- **Presença de Rosto**: Verifica se há uma face humana detectável.
+- **Centralização**: Garante que o rosto está posicionado corretamente no quadro.
+- **Qualidade de Imagem**: Analisa a nitidez (blur) e iluminação.
+- **Acessórios**: Detecta o uso de óculos escuros ou chapéus que possam dificultar a identificação.
 - **Enquadramento 3x4**: Ferramenta de recorte profissional integrada (Cropper.js).
-- **VisualizaÃ§Ã£o Ampliada**: Clique sobre a foto ou documentos carregados para abri-los em tela cheia para conferÃªncia.
+- **Visualização Ampliada**: Clique sobre a foto ou documentos carregados para abri-los em tela cheia para conferência.
 
-## ðŸ“„ Motor de OCR (Tesseract.js)
+## 📄 Motor de OCR (Tesseract.js)
 
-O sistema Ã© capaz de "ler" documentos em formato de imagem e PDF para extrair informaÃ§Ãµes crÃ­ticas.
+O sistema é capaz de "ler" documentos em formato de imagem e PDF para extrair informações críticas.
 
 ### Funcionalidades
-- **Suporte a PDF**: ConversÃ£o automÃ¡tica da primeira pÃ¡gina de PDFs para anÃ¡lise.
-- **Feedback Visual**: Barra de progresso circular dinÃ¢mico que informa o status da leitura ao usuÃ¡rio.
-- **DetecÃ§Ã£o de Tipo**: IdentificaÃ§Ã£o inteligente entre RG, CPF, CNH e CertidÃ£o de Nascimento.
+- **Suporte a PDF**: Conversão automática da primeira página de PDFs para análise.
+- **Feedback Visual**: Barra de progresso circular dinâmico que informa o status da leitura ao usuário.
+- **Detecção de Tipo**: Identificação inteligente entre RG, CPF, CNH e Certidão de Nascimento.
 
-## âš–ï¸ Regras de NegÃ³cio e CRM
+## ⚖️ Regras de Negócio e CRM
 
-### ValidaÃ§Ã£o de Laudo MÃ©dico
-- **CID-10**: LocalizaÃ§Ã£o automÃ¡tica de cÃ³digos internacionais de doenÃ§as.
-- **CRM MÃ©dico**: ExtraÃ§Ã£o do registro profissional e consulta Ã  **API Oficial do CFM** (ResoluÃ§Ã£o nÂº 2.309/2022).
-- **Titularidade**: ComparaÃ§Ã£o entre o nome no documento e o nome preenchido no formulÃ¡rio.
+### Validação de Laudo Médico
+- **CID-10**: Localização automática de códigos internacionais de doenças.
+- **CRM Médico**: Extração do registro profissional e consulta à **API Oficial do CFM** (Resolução nº 2.309/2022).
+- **Titularidade**: Comparação entre o nome no documento e o nome preenchido no formulário.
 
-### ValidaÃ§Ã£o de Identidade
-- **ConferÃªncia de Dados**: O sistema verifica se o CPF e RG lidos no documento coincidem exatamente com o informado no Passo 2.
-- **Atalhos Navigacionais**: Mensagens de erro contÃªm links rÃ¡pidos para voltar Ã  etapa de Dados Pessoais caso necessÃ¡rio.
+### Validação de Identidade
+- **Conferência de Dados**: O sistema verifica se o CPF e RG lidos no documento coincidem exatamente com o informado no Passo 2.
+- **Atalhos Navigacionais**: Mensagens de erro contêm links rápidos para voltar à etapa de Dados Pessoais caso necessário.
 
-## ðŸ—ï¸ NavegaÃ§Ã£o e SeguranÃ§a
+## 🏗️ Navegação e Segurança
 
-- **Stepper Interativo**: Permite a navegaÃ§Ã£o fluida entre os passos (0 a 4) com travas de seguranÃ§a que impedem o avanÃ§o sem validaÃ§Ã£o de IA.
-- **SessÃ£o Administrativa**: GestÃ£o dinÃ¢mica de cabeÃ§alho com nome do usuÃ¡rio operante e botÃ£o de logoff.
-
+- **Stepper Interativo**: Permite a navegação fluida entre os passos (0 a 4) com travas de segurança que impedem o avanço sem validação de IA.
+- **Sessão Administrativa**: Gestão dinâmica de cabeçalho com nome do usuário operante e botão de logoff.

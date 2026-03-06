@@ -1,25 +1,25 @@
-﻿# Arquitetura do MÃ³dulo de MigraÃ§Ã£o
+# Arquitetura do Módulo de Migração
 
-## VisÃ£o Geral
+## Visão Geral
 
-O sistema possui um mÃ³dulo completo de migraÃ§Ã£o de dados do sistema legado (tabela `Cadastro`) para o novo schema. A migraÃ§Ã£o trata desafios complexos como:
-- Descriptografia de dados sensÃ­veis (CPF, RG, CNS)
-- ValidaÃ§Ã£o e sanitizaÃ§Ã£o de dados
+O sistema possui um módulo completo de migração de dados do sistema legado (tabela `Cadastro`) para o novo schema. A migração trata desafios complexos como:
+- Descriptografia de dados sensíveis (CPF, RG, CNS)
+- Validação e sanitização de dados
 - Mapeamento visual de campos entre schemas diferentes
-- RevalidaÃ§Ã£o de registros migrados
+- Revalidação de registros migrados
 
-## Arquitetura do MÃ³dulo de MigraÃ§Ã£o
+## Arquitetura do Módulo de Migração
 
 ```mermaid
 graph TB
-    subgraph "Frontend - Centro de MigraÃ§Ã£o"
+    subgraph "Frontend - Centro de Migração"
         UI[AdminMigration.vue<br/>Interface Principal]
         Mapper[AdminMapper.vue<br/>Mapeador Visual]
         Encryption[AdminEncryption.vue<br/>Teste de Criptografia]
-        Debug[DebugConsole.vue<br/>Monitor de ConexÃ£o]
+        Debug[DebugConsole.vue<br/>Monitor de Conexão]
     end
     
-    subgraph "Backend - API de MigraÃ§Ã£o"
+    subgraph "Backend - API de Migração"
         Controller[MigrationController]
         Service[MigrationService]
     end
@@ -43,20 +43,20 @@ graph TB
     style Legacy fill:#ffe1e1
 ```
 
-## Endpoints da API de MigraÃ§Ã£o
+## Endpoints da API de Migração
 
-| Endpoint | MÃ©todo | DescriÃ§Ã£o |
+| Endpoint | Método | Descrição |
 |----------|--------|-----------|
-| `/api/migration/start` | POST | Inicia processo de migraÃ§Ã£o |
-| `/api/migration/status` | GET | Retorna status da migraÃ§Ã£o em andamento |
+| `/api/migration/start` | POST | Inicia processo de migração |
+| `/api/migration/status` | GET | Retorna status da migração em andamento |
 | `/api/migration/list` | GET | Lista registros migrados |
 | `/api/migration/validate` | POST | Revalida registros migrados |
 | `/api/migration/compare` | POST | Compara registro atual com legado |
 | `/api/migration/schema` | POST | Retorna schema de uma tabela |
-| `/api/migration/tables` | POST | Lista tabelas disponÃ­veis |
+| `/api/migration/tables` | POST | Lista tabelas disponíveis |
 | `/api/migration/save_mapping` | POST | Salva mapeamento de campos |
 
-## Fluxo Completo de MigraÃ§Ã£o
+## Fluxo Completo de Migração
 
 ```mermaid
 sequenceDiagram
@@ -72,7 +72,7 @@ sequenceDiagram
     
     API->>Svc: runMigration(config)
     Svc->>Legacy: Conectar (host, user, pass)
-    Legacy-->>Svc: ConexÃ£o OK
+    Legacy-->>Svc: Conexão OK
     
     Svc->>Legacy: SELECT * FROM Cadastro
     Legacy-->>Svc: Registros (criptografados)
@@ -86,18 +86,18 @@ sequenceDiagram
             Svc->>Svc: Manter NULL + Backup em legacy_*
         end
         
-        Svc->>Svc: Validar CPF (dÃ­gitos verificadores)
+        Svc->>Svc: Validar CPF (dígitos verificadores)
         Svc->>Svc: Sanitizar nome (Title Case)
         
         Svc->>Target: Verificar duplicata (legado_id, CPF)
         
-        alt NÃ£o Ã© duplicata
+        alt Não é duplicata
             Svc->>Target: INSERT INTO usuarios
             Svc->>Target: INSERT INTO beneficiarios
             Svc->>Target: INSERT INTO solicitacoes
             Svc->>Legacy: SELECT * FROM Arquivos
             Svc->>Target: INSERT INTO documentos
-        else Ã‰ duplicata
+        else É duplicata
             Svc->>Svc: Pular registro
         end
     end
@@ -111,17 +111,17 @@ sequenceDiagram
 ## Processo de Descriptografia
 
 ### Algoritmo Utilizado
-- **MÃ©todo**: AES-256-CBC
+- **Método**: AES-256-CBC
 - **Chave**: Hash SHA-256 de `"AHgsi278"`
 - **IV**: Primeiros 16 bytes do hash SHA-256 de `"sxcsdfce"`
 
-### EstratÃ©gias de Descriptografia
+### Estratégias de Descriptografia
 
 ```mermaid
 flowchart TD
-    A[Valor Criptografado] --> B{EstratÃ©gia 1:<br/>Base64 Decode + Decrypt}
+    A[Valor Criptografado] --> B{Estratégia 1:<br/>Base64 Decode + Decrypt}
     B -->|Sucesso| C[Retornar Valor]
-    B -->|Falha| D{EstratÃ©gia 2:<br/>Double Base64 + Raw Decrypt}
+    B -->|Falha| D{Estratégia 2:<br/>Double Base64 + Raw Decrypt}
     D -->|Sucesso| C
     D -->|Falha| E[Retornar FALSE]
     
@@ -129,11 +129,11 @@ flowchart TD
     F --> G[Campo principal = NULL]
     
     C --> H{Validar Formato}
-    H -->|CPF vÃ¡lido| I[Usar valor]
-    H -->|InvÃ¡lido| F
+    H -->|CPF válido| I[Usar valor]
+    H -->|Inválido| F
 ```
 
-### CÃ³digo de Descriptografia
+### Código de Descriptografia
 
 ```php
 private function my_simple_crypt($string, $action = 'd') {
@@ -145,11 +145,11 @@ private function my_simple_crypt($string, $action = 'd') {
     $iv = substr(hash('sha256', $secret_iv), 0, 16);
     
     if ($action == 'd') {
-        // EstratÃ©gia 1: Decode padrÃ£o
+        // Estratégia 1: Decode padrão
         $attempt1 = openssl_decrypt(base64_decode($string), $encrypt_method, $key, 0, $iv);
         if ($attempt1 !== false) return $attempt1;
 
-        // EstratÃ©gia 2: Double Base64
+        // Estratégia 2: Double Base64
         $step1 = base64_decode($string);
         $step2 = base64_decode($step1);
         if ($step2) {
@@ -196,51 +196,51 @@ graph LR
 ### Funcionalidades do Mapeador
 
 1. **Drag & Drop**: Arraste tabelas da sidebar para o canvas
-2. **ConexÃµes**: Conecte campos de origem (azul) para destino (verde)
-3. **ExportaÃ§Ã£o**: Salve o mapeamento em JSON
-4. **ImportaÃ§Ã£o**: Carregue mapeamentos salvos
-5. **PersistÃªncia**: Mapeamentos salvos em `migration_config.json`
+2. **Conexões**: Conecte campos de origem (azul) para destino (verde)
+3. **Exportação**: Salve o mapeamento em JSON
+4. **Importação**: Carregue mapeamentos salvos
+5. **Persistência**: Mapeamentos salvos em `migration_config.json`
 
-## Processo de RevalidaÃ§Ã£o
+## Processo de Revalidação
 
-ApÃ³s a migraÃ§Ã£o, registros podem ser revalidados individualmente ou em lote:
+Após a migração, registros podem ser revalidados individualmente ou em lote:
 
 ```mermaid
 flowchart TD
-    A[Selecionar Registros] --> B[Abrir Modal de RevalidaÃ§Ã£o]
+    A[Selecionar Registros] --> B[Abrir Modal de Revalidação]
     B --> C{Comparar com Legado?}
     
     C -->|Sim| D[Buscar dados do BD Legado]
-    D --> E[Exibir ComparaÃ§Ã£o]
-    E --> F{UsuÃ¡rio seleciona<br/>campos para restaurar}
+    D --> E[Exibir Comparação]
+    E --> F{Usuário seleciona<br/>campos para restaurar}
     
-    C -->|NÃ£o| G[Pular comparaÃ§Ã£o]
+    C -->|Não| G[Pular comparação]
     F --> H[Aplicar Overrides]
     G --> H
     
     H --> I[Sanitizar Nome]
     I --> J[Validar CPF]
     
-    J -->|VÃ¡lido| K[Atualizar Registro]
-    J -->|InvÃ¡lido| L[Marcar Erro]
+    J -->|Válido| K[Atualizar Registro]
+    J -->|Inválido| L[Marcar Erro]
     
-    K --> M[Aprovar SolicitaÃ§Ã£o]
-    M --> N[Adicionar ObservaÃ§Ã£o]
+    K --> M[Aprovar Solicitação]
+    M --> N[Adicionar Observação]
     N --> O[Fim]
     L --> O
 ```
 
-### ValidaÃ§Ãµes AutomÃ¡ticas
+### Validações Automáticas
 
-1. **CPF**: Verifica dÃ­gitos verificadores
+1. **CPF**: Verifica dígitos verificadores
 2. **Nome**: Converte para Title Case, remove caracteres especiais
-3. **ResponsÃ¡vel**: Sanitiza nome do responsÃ¡vel
+3. **Responsável**: Sanitiza nome do responsável
 
 ## Tratamento de Dados Criptografados
 
-### EstratÃ©gia de Backup
+### Estratégia de Backup
 
-Quando a descriptografia falha, os dados originais sÃ£o preservados:
+Quando a descriptografia falha, os dados originais são preservados:
 
 | Campo Principal | Campo de Backup | Comportamento |
 |----------------|-----------------|---------------|
@@ -253,7 +253,7 @@ Quando a descriptografia falha, os dados originais sÃ£o preservados:
 ```json
 {
   "id": 123,
-  "nome": "JoÃ£o da Silva",
+  "nome": "João da Silva",
   "cpf": null,
   "rg": null,
   "legacy_cpf": "U2FsdGVkX1+vupppZksvRf5pq5g5XjFRlipRkwB0K1Y=",
@@ -267,26 +267,26 @@ Quando a descriptografia falha, os dados originais sÃ£o preservados:
 ### Debug Console
 
 O componente `DebugConsole.vue` monitora em tempo real:
-- Status da conexÃ£o com o banco de dados
-- Host, database e usuÃ¡rio
+- Status da conexão com o banco de dados
+- Host, database e usuário
 - Contagem de registros por tabela
 
-### Logs de MigraÃ§Ã£o
+### Logs de Migração
 
-Logs sÃ£o salvos em `migration_status.json`:
+Logs são salvos em `migration_status.json`:
 
 ```json
 {
   "status": "completed",
-  "message": "MigraÃ§Ã£o concluÃ­da! 150 registros processados.",
+  "message": "Migração concluída! 150 registros processados.",
   "progress": 100,
   "timestamp": 1707504000
 }
 ```
 
-## ConfiguraÃ§Ã£o de MigraÃ§Ã£o
+## Configuração de Migração
 
-### Arquivo de ConfiguraÃ§Ã£o
+### Arquivo de Configuração
 
 Exemplo de `AdminMigration.vue` config:
 
@@ -302,7 +302,7 @@ const config = ref({
 })
 ```
 
-### BotÃ£o "Usar Banco Atual"
+### Botão "Usar Banco Atual"
 
 Preenche automaticamente com credenciais locais quando origem = destino:
 
@@ -313,7 +313,7 @@ const useLocalConfig = () => {
         port: '3306',
         db_name: 'db_ciptea_girassol',
         username: 'ciptea_girassol_dti',
-        password: '', // UsuÃ¡rio preenche
+        password: '', // Usuário preenche
         ...
     }
 }
@@ -321,21 +321,21 @@ const useLocalConfig = () => {
 
 ## Casos de Uso
 
-### 1. MigraÃ§Ã£o Inicial
+### 1. Migração Inicial
 
 ```bash
 # Administrador acessa /admin/migracao
 # Configura credenciais do banco legado
-# Clica em "Iniciar MigraÃ§Ã£o"
+# Clica em "Iniciar Migração"
 # Sistema processa todos os registros
 # Exibe resultado: "150 registros migrados com sucesso"
 ```
 
-### 2. RevalidaÃ§Ã£o em Lote
+### 2. Revalidação em Lote
 
 ```bash
-# Administrador acessa aba "RevalidaÃ§Ã£o"
-# Seleciona 10 registros com CPF invÃ¡lido
+# Administrador acessa aba "Revalidação"
+# Seleciona 10 registros com CPF inválido
 # Clica em "Revalidar Selecionados"
 # Sistema valida e corrige automaticamente
 # Resultado: "8 aprovados, 2 com erro"
@@ -347,28 +347,27 @@ const useLocalConfig = () => {
 # Administrador acessa aba "Mapeamento Visual"
 # Arrasta "legado_cadastro" para o canvas
 # Arrasta "beneficiarios" para o canvas
-# Conecta campos: Nome â†’ nome, CPF â†’ cpf
+# Conecta campos: Nome → nome, CPF → cpf
 # Clica em "Salvar Mapeamento"
-# ConfiguraÃ§Ã£o salva em migration_config.json
+# Configuração salva em migration_config.json
 ```
 
-## MÃ©tricas de Sucesso
+## Métricas de Sucesso
 
 - **Taxa de Descriptografia**: ~60-70% (varia por campo)
 - **Registros Duplicados**: Ignorados automaticamente
-- **ValidaÃ§Ã£o de CPF**: ~85% de sucesso
-- **Tempo MÃ©dio**: ~0.5s por registro
+- **Validação de CPF**: ~85% de sucesso
+- **Tempo Médio**: ~0.5s por registro
 
-## PrÃ³ximos Passos
+## Próximos Passos
 
-- [Status de ModernizaÃ§Ã£o](modernization_status.md)
+- [Status de Modernização](modernization_status.md)
 - [Schema do Banco de Dados](database_schema.md)
-- [DocumentaÃ§Ã£o da API](../api/endpoints.md)
+- [Documentação da API](../api/endpoints.md)
 
 ---
-### ðŸ•°ï¸ HistÃ³rico de AtualizaÃ§Ãµes
-| Data | VersÃ£o | Resumo | Autor |
+### 🕰️ Histórico de Atualizações
+| Data | Versão | Resumo | Autor |
 | :--- | :--- | :--- | :--- |
-| 18/02/2026 12:00 | 1.2 | RenomeaÃ§Ã£o para 'Arquitetura de MigraÃ§Ã£o' e consolidaÃ§Ã£o de fluxos. | Victor Hugo Manata Pontes |
-| 10/02/2026 14:00 | 1.0 | CriaÃ§Ã£o inicial do diagrama de fluxo de migraÃ§Ã£o. | Victor Hugo Manata Pontes |
-
+| 18/02/2026 12:00 | 1.2 | Renomeação para 'Arquitetura de Migração' e consolidação de fluxos. | Victor Hugo Manata Pontes |
+| 10/02/2026 14:00 | 1.0 | Criação inicial do diagrama de fluxo de migração. | Victor Hugo Manata Pontes |
